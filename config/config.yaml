@@ -4,11 +4,13 @@ mysql:
   username: dialtcp 
   password: Smj4rJac5mf
   dbname: douyin
-redis:
-  host: localhost
-  port: 6379
-  db: 0
+# redis:
+#   host: localhost
+#   port: 6379
+#   db: 0
 jwt:
   # token expire time in minutes
   expire_minutes: 14400
   secret_key: secret
+static:
+  path: ./static

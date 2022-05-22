@@ -27,6 +27,9 @@ type Config struct {
 		ExpireMinutes int    `yaml:"expire_minutes"`
 		SecretKey     string `yaml:"secret_key"`
 	}
+	Static struct {
+		Path string
+	}
 }
 
 // The path of the configuration file.
