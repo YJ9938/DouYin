@@ -35,12 +35,14 @@ func init() {
 	}
 
 	// Connet to the Redis instance.
-	rdb = redis.NewClient(&redis.Options{
-		Addr: fmt.Sprintf("%s:%s", config.C.Redis.Host, config.C.Redis.Port),
-		DB:   config.C.Redis.DB,
-	})
-	err = rdb.Set("key", "value1", 0).Err()
-	if err != nil {
-		panic(err)
+	if config.C.Redis.Host != "" {
+		rdb = redis.NewClient(&redis.Options{
+			Addr: fmt.Sprintf("%s:%s", config.C.Redis.Host, config.C.Redis.Port),
+			DB:   config.C.Redis.DB,
+		})
+		err = rdb.Set("key", "value1", 0).Err()
+		if err != nil {
+			panic(err)
+		}
 	}
 }
