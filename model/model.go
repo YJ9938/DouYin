@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/aeof/douyin/config"
+	"github.com/YJ9938/DouYin/config"
 	"github.com/go-redis/redis"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/aeof/douyin/config"
+	"github.com/YJ9938/DouYin/config"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )

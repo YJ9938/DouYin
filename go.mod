@@ -1,4 +1,4 @@
-module github.com/aeof/douyin
+module github.com/YJ9938/DouYin
 
 go 1.18
 

@@ -7,7 +7,7 @@ import (
 	"math/rand"
 	"reflect"
 
-	"github.com/aeof/douyin/model"
+	"github.com/YJ9938/DouYin/model"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/aeof/douyin/api"
-	"github.com/aeof/douyin/config"
-	_ "github.com/aeof/douyin/model"
+	"github.com/YJ9938/DouYin/api"
+	"github.com/YJ9938/DouYin/config"
+	_ "github.com/YJ9938/DouYin/model"
 	"github.com/gin-gonic/gin"
 )
 
