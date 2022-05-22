@@ -50,3 +50,13 @@ func GetUserByUsername(username string) (*User, error) {
 	}
 	return &user, err
 }
+
+// GetUsernameByID gets the username of a user specified by its ID.
+func GetUsernameByID(id int64) (string, error) {
+	var user User
+	err := db.Select("username").First(&user, id).Error
+	if err == gorm.ErrRecordNotFound {
+		return "", ErrUserNotExists
+	}
+	return user.Username, err
+}

@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -15,6 +16,18 @@ type Claims struct {
 }
 
 var secretKey = []byte(config.C.JWT.SecretKey)
+
+func getUserID(c *gin.Context) int64 {
+	// token's user ID
+	idVal, exists := c.Get("id")
+	if !exists {
+		log.Panicf("id %v not found\n", idVal)
+	}
+	var id int64
+	fmt.Sscanf(idVal.(string), "%d", &id)
+
+	return id
+}
 
 func AuthMiddleware(c *gin.Context) {
 	// Check the token parameter

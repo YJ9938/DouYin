@@ -148,22 +148,47 @@ type UserInfoResponse struct {
 // QueryUserInfo queries the info of a user.
 // Note it is an authorized API.
 func QueryUserInfo(c *gin.Context) {
-	idVal, exists := c.Get("id")
-	if !exists {
-		log.Panicf("id %v not found\n", idVal)
-	}
+	id := getUserID(c)
+	var targetID int64
+	fmt.Sscanf(c.Query("user_id"), "%d", &targetID)
 
-	var id int64
-	fmt.Sscanf(idVal.(string), "%d", &id)
-
-	var userInfoResponse UserInfoResponse
-	followerCount, err := model.GetFollowerCount(id)
+	// Username
+	username, err := model.GetUsernameByID(targetID)
 	if err != nil {
-		log.Printf("error when query user follower count: %s\n", err)
+		if err == model.ErrUserNotExists {
+			Error(c, 400, "用户不存在")
+		} else {
+			log.Printf("error when querying username of id %d: %s", targetID, err)
+			InternalError(c)
+		}
+		return
+	}
+	// Follower count
+	followerCount, err := model.GetFollowerCount(targetID)
+	if err != nil {
+		log.Printf("error when querying user follower count: %s\n", err)
 		InternalError(c)
 		return
 	}
-	userInfoResponse.User.FollowerCount = followerCount
+	// Following count
+	followingCount, err := model.GetFollowingCount(targetID)
+	if err != nil {
+		log.Printf("error when querying user following count: %s\n", err)
+		InternalError(c)
+		return
+	}
+	// Following status
+	isFollowing, err := model.IsFollowing(id, targetID)
+	if err != nil {
+		log.Printf("error when querying following status: %s\n", err)
+	}
 
-	c.JSON(200, userInfoResponse)
+	var resp UserInfoResponse
+	resp.Status = Status{StatusCode: 0, StatusMessage: "获取成功"}
+	resp.User.FollowCount = followingCount
+	resp.User.FollowerCount = followerCount
+	resp.User.IsFollow = isFollowing
+	resp.User.Name = username
+	resp.User.ID = targetID
+	c.JSON(200, resp)
 }
