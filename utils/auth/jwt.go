@@ -2,9 +2,10 @@ package auth
 
 import (
 	"errors"
+	"time"
+
 	"github.com/YJ9938/DouYin/model"
 	"github.com/dgrijalva/jwt-go"
-	"time"
 )
 
 var jwtKey = []byte("han")

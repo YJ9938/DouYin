@@ -2,12 +2,15 @@ package controller
 
 import (
 	"fmt"
-	"github.com/YJ9938/DouYin/model"
-	"github.com/YJ9938/DouYin/service"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"path/filepath"
 	"strconv"
+
+	"github.com/YJ9938/DouYin/config"
+	"github.com/YJ9938/DouYin/model"
+	"github.com/YJ9938/DouYin/service"
+	"github.com/YJ9938/DouYin/utils/cover"
+	"github.com/gin-gonic/gin"
 )
 
 //发布视频响应
@@ -26,7 +29,14 @@ func Publish(c *gin.Context) {
 	title := c.PostForm("title")
 	//从token取出当前用户ID
 	token := c.PostForm("token")
-	rawUserId := parseToken(token).Id
+	claims := parseToken(token)
+	if claims == nil {
+		c.JSON(http.StatusOK, PublishResponse{
+			Response: Response{StatusCode: 1, StatusMsg: "身份鉴权失败"},
+		})
+		return
+	}
+	rawUserId := claims.Id
 	userId, _ := strconv.ParseInt(rawUserId, 10, 64)
 	// 读取data数据
 	data, err := c.FormFile("data")
@@ -37,18 +47,20 @@ func Publish(c *gin.Context) {
 		return
 	}
 	// 存放到本地
-	fileName := filepath.Base(data.Filename) // filename 应该 与 title 对应
-
-	saveFile := filepath.Join("./public/video", fileName)
-	if err := c.SaveUploadedFile(data, saveFile); err != nil {
+	videoName := filepath.Base(data.Filename) // filename 应该 与 title 对应
+	videoPath := filepath.Join("./public/video", videoName)
+	if err := c.SaveUploadedFile(data, videoPath); err != nil {
 		c.JSON(http.StatusOK, PublishResponse{
 			Response: Response{StatusCode: 1, StatusMsg: err.Error()},
 		})
 		return
 	}
 	// 生成视频 封面 url链接
-	playURL := "http://10.116.89:8080/static/video/" + fileName
-	coverURL := "http://10.116.89:8080/static/cover/" + fileName
+	coverPath := "./public/cover/" + videoName
+	coverName, _ := cover.GenerateCover(videoPath, coverPath, 1)
+
+	playURL := "http://" + config.C.LocalIp.Ip + ":" + config.C.LocalIp.Port + "/static/video/" + videoName
+	coverURL := "http://" + config.C.LocalIp.Ip + ":" + config.C.LocalIp.Port + "/static/cover/" + coverName
 	video := &model.Video{
 		AuthorID: userId,
 		Title:    title,
@@ -65,7 +77,7 @@ func Publish(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, Response{StatusCode: 0})
+	c.JSON(http.StatusOK, Response{StatusCode: 0, StatusMsg: "视频上传成功"})
 }
 
 func PublishList(c *gin.Context) {
@@ -80,6 +92,15 @@ func PublishList(c *gin.Context) {
 		})
 		return
 	}
+
+	claims := parseToken(token)
+	if claims == nil || claims.Id != rawId {
+		c.JSON(http.StatusOK, PublishListResponse{
+			Response: Response{StatusCode: 1, StatusMsg: "token鉴权失败"},
+		})
+		return
+	}
+
 	publishService := service.PublishService{
 		Id: userId,
 	}
@@ -91,7 +112,7 @@ func PublishList(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, PublishListResponse{
-		Response:  Response{StatusCode: 0},
+		Response:  Response{StatusCode: 0, StatusMsg: "查询成功"},
 		VideoList: videoList,
 	})
 }

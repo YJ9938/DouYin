@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+
 	"github.com/YJ9938/DouYin/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -14,7 +15,7 @@ var (
 //连接数据库
 func InitMySQL() (err error) {
 	config.Init()
-	database := config.C.MySQL
+	database := config.C.MySQL // mysql struct
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", database.Username,
 		database.Password, database.Host, database.Port, database.DBName)
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})

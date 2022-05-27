@@ -2,14 +2,15 @@ package controller
 
 import (
 	"crypto/sha256"
-	"github.com/YJ9938/DouYin/model"
-	"github.com/YJ9938/DouYin/service"
-	"github.com/gin-gonic/gin"
 	"log"
 	"math/rand"
 	"net/http"
 	"reflect"
 	"strconv"
+
+	"github.com/YJ9938/DouYin/model"
+	"github.com/YJ9938/DouYin/service"
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -58,6 +59,7 @@ func Register(c *gin.Context) {
 	password := c.PostForm("password")
 	if !checkUserValid(username, password) {
 		Error(c, 1, "用户名或密码不符合规范")
+		return
 	}
 	// Generate random salt.
 	salt := generateSalt(32)
@@ -142,8 +144,18 @@ func UserInfo(c *gin.Context) {
 	queryId, _ := strconv.ParseInt(rawId, 10, 64)
 	//从token取出当前用户ID
 	token := c.Query("token")
-	rawCurrentId := parseToken(token).Id
+	claims := parseToken(token)
+	if claims == nil {
+		Error(c, 1, "身份鉴权失败")
+		return
+	}
+	rawCurrentId := claims.Id
 	currentId, _ := strconv.ParseInt(rawCurrentId, 10, 64)
+	if queryId != currentId {
+		Error(c, 1, "身份鉴权失败")
+		return
+	}
+
 	userInfoService := service.UserInfoService{
 		CurrentUser: currentId,
 		QueryUser:   queryId,
@@ -155,7 +167,7 @@ func UserInfo(c *gin.Context) {
 		})
 	}
 	c.JSON(http.StatusOK, UserInfoResponse{
-		Response: Response{StatusCode: 0},
+		Response: Response{StatusCode: 0, StatusMsg: "查询成功"},
 		User:     user,
 	})
 }

@@ -1,8 +1,9 @@
 package model
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type VideoDao struct {
@@ -19,14 +20,17 @@ type Video struct {
 
 //返回响应带Author的Video结构
 type VideoDisplay struct {
-	Id            int64     `json:"id,omitempty"`
-	UserInfoId    int64     `json:"-"`
-	Author        *UserInfo `json:"author" gorm:"-"`
-	PlayUrl       string    `json:"play_url" json:"play_url,omitempty"`
-	CoverUrl      string    `json:"cover_url,omitempty"`
-	FavoriteCount int64     `json:"favorite_count,omitempty"`
-	CommentCount  int64     `json:"comment_count,omitempty"`
-	IsFavorite    bool      `json:"is_favorite,omitempty"`
+	Id         int64     `json:"id,omitempty"`
+	UserInfoId int64     `json:"-"`
+	Author     *UserInfo `json:"author" gorm:"-"`
+	PlayUrl    string    `json:"play_url,omitempty"`
+	CoverUrl   string    `json:"cover_url,omitempty"`
+	// FavoriteCount int64     `json:"favorite_count,omitempty"`
+	// CommentCount  int64     `json:"comment_count,omitempty"`
+	// IsFavorite    bool      `json:"is_favorite,omitempty"`
+	FavoriteCount int64     `json:"favorite_count"`
+	CommentCount  int64     `json:"comment_count"`
+	IsFavorite    bool      `json:"is_favorite"`
 	Title         string    `json:"title"`
 	CreatedAt     time.Time `json:"-"`
 	UpdatedAt     time.Time `json:"-"`
@@ -48,6 +52,6 @@ func (vd *VideoDao) QueryVideosByUserId(id int64) ([]Video, error) {
 
 func (vd *VideoDao) QueryVideoByLatestTime(latestTime time.Time) ([]Video, error) {
 	var videoList []Video
-	err := DB.Model(&Video{}).Where("created_at<=?", latestTime).Order("created_at ASC").Limit(30).Find(&videoList).Error
+	err := DB.Model(&Video{}).Where("created_at<=?", latestTime).Order("created_at DESC").Limit(30).Find(&videoList).Error
 	return videoList, err
 }

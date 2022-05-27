@@ -1,8 +1,9 @@
 package service
 
 import (
-	"github.com/YJ9938/DouYin/model"
 	"time"
+
+	"github.com/YJ9938/DouYin/model"
 )
 
 type FeedService struct {
@@ -15,6 +16,7 @@ func (f *FeedService) QueryFeed() ([]model.VideoDisplay, error) {
 	videoDisplayList := make([]model.VideoDisplay, 0, 30)
 	userDao := model.NewUserDao()
 	for i := range videoList {
+		// feed函数 每个视频作者可能不一样
 		var videoDisplay model.VideoDisplay
 		videoDisplay.Title = videoList[i].Title
 		videoDisplay.Id = int64(videoList[i].ID)
@@ -22,7 +24,11 @@ func (f *FeedService) QueryFeed() ([]model.VideoDisplay, error) {
 		videoDisplay.PlayUrl = videoList[i].PlayURL
 		videoDisplay.CoverUrl = videoList[i].CoverURL
 		videoDisplay.Author, _ = userDao.QueryUserById(videoList[i].AuthorID)
-		//videoDisplayList[i].IsFavorite
+		// 下面三个需要查表
+		videoDisplay.IsFavorite = false
+		videoDisplay.CommentCount = 0
+		videoDisplay.FavoriteCount = 0
+		//
 		videoDisplayList = append(videoDisplayList, videoDisplay)
 	}
 	return videoDisplayList, err
