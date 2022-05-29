@@ -1,8 +1,8 @@
 mysql:
   host: localhost
   port: 3306
-  username: dialtcp 
-  password: Smj4rJac5mf
+  username: root 
+  password: root
   dbname: douyin
 # redis:
 #   host: localhost

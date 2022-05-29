@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/YJ9938/DouYin/config"
-	"github.com/go-redis/redis"
+	"DouYin/config"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 var (
-	db  *gorm.DB
-	rdb *redis.Client
+	db *gorm.DB
+	// rdb *redis.Client
 )
 
 func mySQLDSN(c *config.Config) string {
@@ -30,19 +30,19 @@ func init() {
 	}
 
 	// Migrate MySQL database schema.
-	if err := db.AutoMigrate(&User{}, &Video{}, &Follow{}, &Faverite{}, &Comment{}); err != nil {
+	if err := db.AutoMigrate(&User{}, &Video{}, &Follow{}, &Favorite{}, &Comment{}); err != nil {
 		log.Fatalf("failed to migrate DB schema: %s", err)
 	}
 
 	// Connet to the Redis instance.
-	if config.C.Redis.Host != "" {
-		rdb = redis.NewClient(&redis.Options{
-			Addr: fmt.Sprintf("%s:%s", config.C.Redis.Host, config.C.Redis.Port),
-			DB:   config.C.Redis.DB,
-		})
-		err = rdb.Set("key", "value1", 0).Err()
-		if err != nil {
-			panic(err)
-		}
-	}
+	// if config.C.Redis.Host != "" {
+	// 	rdb = redis.NewClient(&redis.Options{
+	// 		Addr: fmt.Sprintf("%s:%s", config.C.Redis.Host, config.C.Redis.Port),
+	// 		DB:   config.C.Redis.DB,
+	// 	})
+	// 	err = rdb.Set("key", "value1", 0).Err()
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// }
 }

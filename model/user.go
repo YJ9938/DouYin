@@ -22,6 +22,19 @@ type User struct {
 	Salt     []byte `gorm:"not null; type:varbinary(32)"`
 }
 
+// usersLoginInfo use map to store user info, and key is username+password for demo
+// user data will be cleared every time the server starts
+// test data: username=zhanglei, password=douyin
+var usersLoginInfo = map[string]User{
+	"rivercolddouyin": {
+		ID:       1,
+		Name:     "rivercold",
+		Username: "rivercold",
+		Password: []byte("hellohxr123"),
+		Salt:     []byte("douyin"),
+	},
+}
+
 // AddUser adds a user to the database.
 // If there is already a user having the username, ErrUserExists is returned.
 func AddUser(user *User) error {

@@ -1,4 +1,4 @@
-module github.com/YJ9938/DouYin
+module DouYin
 
 go 1.18
 
