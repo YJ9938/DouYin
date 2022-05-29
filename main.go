@@ -1,29 +1,17 @@
 package main
 
 import (
-	"DouYin/api"
-
+	"github.com/YJ9938/DouYin/model"
+	"github.com/YJ9938/DouYin/router"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	c := gin.Default()
+	r := gin.Default()
 
-	// Unauthorized APIs
-	// {
-	// 	c.POST("douyin/user/register/", api.Register)
-	// 	c.POST("douyin/user/login/", api.Login)
-	// 	c.Static("static/", config.C.Static.Path)
-	// }
+	model.InitMySQL()
 
-	// Authorized APIs all contain a query parameter
-	authGroup := c.Group("/douyin")
-	// authGroup.Use(api.AuthMiddleware)
-	{
-		authGroup.GET("/user/", api.QueryUserInfo)
-		authGroup.POST("/favorite/action/", api.FavoriteAction)
-		authGroup.POST("/favorite/list/", api.GetFavoriteList)
-	}
+	router.InitRouter(r)
 
-	c.Run()
+	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

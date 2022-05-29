@@ -11,65 +11,75 @@ var (
 	ErrUserNotExists = errors.New("error user not exists")
 )
 
-// 用户信息表
-// 每个用户注册时分配随机的salt，表中存SHA256(password, salt)
-// idx_username_password: 注册、登录时根据用户名查找用户
+type UserDao struct {
+}
+
+type UserInfoDao struct {
+}
+
+// 用户表
 type User struct {
-	ID       int64 `gorm:"primary key"`
-	Name     string
-	Username string `gorm:"not null; unique; size:32; index:idx_username"`
-	Password []byte `gorm:"not null; type:varbinary(256)"`
-	Salt     []byte `gorm:"not null; type:varbinary(32)"`
+	Id       int64  `gorm:"primary key" json:"id,omitempty"`
+	Username string `gorm:"not null; unique; size:32; index:idx_username" json:"name,omitempty"`
+	Password []byte `gorm:"not null; type:varbinary(256)" json:"password"`
+	// FollowCount   int64  `json:"follow_count,omitempty"`
+	// FollowerCount int64  `json:"follower_count,omitempty"`
+	Salt []byte `gorm:"not null; type:varbinary(32)" json:"-"`
 }
 
-// usersLoginInfo use map to store user info, and key is username+password for demo
-// user data will be cleared every time the server starts
-// test data: username=zhanglei, password=douyin
-var usersLoginInfo = map[string]User{
-	"rivercolddouyin": {
-		ID:       1,
-		Name:     "rivercold",
-		Username: "rivercold",
-		Password: []byte("hellohxr123"),
-		Salt:     []byte("douyin"),
-	},
+//response 返回的用户信息表
+type UserInfo struct {
+	Id       int64  `json:"id,omitempty"`
+	Username string `json:"name,omitempty"`
+	// FollowCount   int64 `json:"follow_count,omitempty"`
+	// FollowerCount int64 `json:"follower_count,omitempty"`
+	// IsFollow      bool  `json:"is_follow,omitempty"`
+	FollowCount   int64 `json:"follow_count"`
+	FollowerCount int64 `json:"follower_count"`
+	IsFollow      bool  `json:"is_follow"`
 }
 
-// AddUser adds a user to the database.
-// If there is already a user having the username, ErrUserExists is returned.
-func AddUser(user *User) error {
-	return db.Transaction(func(tx *gorm.DB) error {
-		// Check if the account already exists.
-		var count int64
-		if err := tx.Table("users").Where("username = ?", user.Username).Count(&count).Error; err != nil {
-			return err
-		}
-		if count != 0 {
-			return ErrUserExists
-		}
-
-		// Create a new user.
-		return tx.Save(user).Error
-	})
+func NewUserDao() *UserDao {
+	return new(UserDao)
 }
 
-// GetUserByUsername gets the user by its name.
-// If there is no such a user, ErrUserNotExists is returned.
-func GetUserByUsername(username string) (*User, error) {
+func NewUserInfoDao() *UserInfoDao {
+	return new(UserInfoDao)
+}
+
+func (u *UserDao) QueryUserById(id int64) (*UserInfo, error) {
+
+	user := &User{}
+	userInfo := &UserInfo{}
+	if err := DB.First(user, "Id = ?", id).Error; err != nil {
+		return userInfo, err
+	}
+	userInfo.Id = user.Id
+	userInfo.Username = user.Username
+	// 这里剩下三个数据需要查表获得
+	userInfo.FollowCount = 0
+	userInfo.FollowerCount = 0
+	userInfo.IsFollow = false
+
+	return userInfo, nil
+}
+
+func (u *UserDao) AddUser(user *User) error {
+	var count int64
+	if err := DB.Table("users").Where("username =?", user.Username).Count(&count).Error; err != nil {
+		return err
+	}
+	if count != 0 {
+		return ErrUserExists
+	}
+	return DB.Create(user).Error
+}
+
+func (u *UserDao) QueryUserByName(name string) (*User, error) {
 	var user User
-	err := db.Where(&User{Username: username}, "username").First(&user).Error
+	err := DB.Where(&User{Username: name}, "username").First(&user).Error
 	if err == gorm.ErrRecordNotFound {
 		return nil, ErrUserNotExists
 	}
 	return &user, err
-}
-
-// GetUsernameByID gets the username of a user specified by its ID.
-func GetUsernameByID(id int64) (string, error) {
-	var user User
-	err := db.Select("username").First(&user, id).Error
-	if err == gorm.ErrRecordNotFound {
-		return "", ErrUserNotExists
-	}
-	return user.Username, err
 }

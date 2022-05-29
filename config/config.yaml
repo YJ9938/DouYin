@@ -14,3 +14,6 @@ jwt:
   secret_key: secret
 static:
   path: ./static
+localip:
+  ip: 10.116.89.246
+  port: 8080

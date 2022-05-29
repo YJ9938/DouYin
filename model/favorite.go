@@ -6,8 +6,8 @@ import "gorm.io/gorm"
 // idx_userid_videoid: 查找用户点赞列表，查找用户是否给某视频点了赞
 type Favorite struct {
 	gorm.Model
-	UserID  int64 `gorm:"index:idx_userid_videoid"`
-	VideoID int64 `gorm:"index:idx_userid_videoid"`
+	UserID  int64 `gorm:"not null; index:idx_userid_videoid" json:"user_id"`
+	VideoID int64 `gorm:"not null; index:idx_userid_videoid" json:"video_id"`
 }
 
 // AddFavorite 添加点赞信息 返回值 0-点赞成功 1-已经点赞 2-数据库错误
