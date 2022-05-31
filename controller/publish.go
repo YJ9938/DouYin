@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -84,7 +83,7 @@ func PublishList(c *gin.Context) {
 	//获取用户id
 	rawId := c.Query("user_id")
 	userId, _ := strconv.ParseInt(rawId, 10, 64)
-	fmt.Println(userId)
+	// fmt.Println(userId)
 	token := c.Query("token")
 	if token == "" {
 		c.JSON(http.StatusOK, PublishListResponse{

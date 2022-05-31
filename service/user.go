@@ -1,8 +1,6 @@
 package service
 
 import (
-	"fmt"
-
 	"github.com/YJ9938/DouYin/model"
 )
 
@@ -29,7 +27,7 @@ func (u *UserInfoService) QueryUserInfoById() (*model.UserInfo, error) {
 	user.FollowCount = follow.FolloweeCount
 	user.FollowerCount = follow.FollowerCount
 	user.IsFollow = follow.IsFollow
-	fmt.Println("followeecount = ", user.FollowCount, " followercount = ", user.FollowerCount)
+	// fmt.Println("followeecount = ", user.FollowCount, " followercount = ", user.FollowerCount)
 
 	return user, err
 }

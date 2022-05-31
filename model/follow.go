@@ -27,7 +27,7 @@ func NewFollowActionDao() *FollowActionDao {
 // from 关注 to
 func (f *FollowActionDao) AddFollow(from, to int64) error {
 	var count int64 = 0
-	if err := DB.Table("follows").Where("followee_id = ? AND follower_id = ?", to, from).Count(&count).Error; err != nil {
+	if err := DB.Table("follows").Where("followee_id = ? AND follower_id = ? AND deleted_at IS NULL", to, from).Count(&count).Error; err != nil {
 		return err
 	}
 	if count != 0 {

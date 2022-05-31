@@ -19,15 +19,16 @@ type FollowListResponse struct {
 	UserList []model.UserInfo `json:"user_list, omitempty"`
 }
 
-// 关注操作
+// 关注操作  apk post请求没有user_id 参数
 func RelationAction(c *gin.Context) {
 	// Get Parameters
-	user_id := c.Query("user_id")
+	// user_id := c.Query("user_id")
 	token := c.Query("token")
 	to_user_id := c.Query("to_user_id")
 	action_type := c.Query("action_type")
-	if user_id == "" || token == "" || to_user_id == "" || action_type == "" {
+	if token == "" || to_user_id == "" || action_type == "" {
 		Error(c, 1, "获取参数失败")
+		// fmt.Println("user_id:", user_id, "\ntoken:", token, "\nto_user_id:", to_user_id, "\naction_type:", action_type)
 		return
 	}
 	actiontype, _ := strconv.ParseInt(action_type, 10, 64)
@@ -43,15 +44,15 @@ func RelationAction(c *gin.Context) {
 		Error(c, 1, "身份鉴权失败")
 		return
 	}
-	queryId, _ := strconv.ParseInt(user_id, 10, 64)
+	// queryId, _ := strconv.ParseInt(user_id, 10, 64)
 	currentId, _ := strconv.ParseInt(claims.Id, 10, 64)
 	toUserId, _ := strconv.ParseInt(to_user_id, 10, 64)
 
-	if queryId != currentId {
-		Error(c, 1, "身份鉴权失败")
-		return
-		//这里有两个参数id 和 一个token的id , 应该要判断用户id 和token是否一致
-	}
+	// if queryId != currentId {
+	// 	Error(c, 1, "身份鉴权失败")
+	// 	return
+	// 	//这里有两个参数id 和 一个token的id , 应该要判断用户id 和token是否一致
+	// }
 
 	// write to database
 	followService := service.FollowService{

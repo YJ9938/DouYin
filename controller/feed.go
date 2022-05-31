@@ -25,7 +25,7 @@ func Feed(c *gin.Context) {
 	} else {
 		latestTime = time.UnixMilli(rawTime)
 	}
-	// fmt.Println(latestTime)
+	// fmt.Println("rawTime:", rawTime, " latestTime:", latestTime)
 	feedService := service.FeedService{
 		LatestTime: latestTime,
 	}
@@ -35,7 +35,7 @@ func Feed(c *gin.Context) {
 			Response: Response{StatusCode: 1, StatusMsg: err.Error()},
 		})
 	}
-	nextTime := videoList[len(videoList)-1].CreatedAt.Unix()
+	nextTime := videoList[len(videoList)-1].CreatedAt.UnixMilli()
 	c.JSON(http.StatusOK, FeedResponse{
 		Response:  Response{StatusCode: 0, StatusMsg: "查询成功"},
 		NextTime:  nextTime,
