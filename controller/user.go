@@ -55,8 +55,10 @@ type UserInfoResponse struct {
 }
 
 func Register(c *gin.Context) {
-	username := c.PostForm("username")
-	password := c.PostForm("password")
+	// username := c.PostForm("username")
+	// password := c.PostForm("password")
+	username := c.Query("username")
+	password := c.Query("password")
 	if !checkUserValid(username, password) {
 		Error(c, 1, "用户名或密码不符合规范")
 		return
@@ -98,8 +100,10 @@ func Register(c *gin.Context) {
 }
 
 func Login(c *gin.Context) {
-	username := c.PostForm("username")
-	password := c.PostForm("password")
+	// username := c.PostForm("username")
+	// password := c.PostForm("password")
+	username := c.Query("username")
+	password := c.Query("password")
 	if !checkUserValid(username, password) {
 		Error(c, 1, "用户名或密码不符合要求")
 		return
