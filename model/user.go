@@ -57,9 +57,9 @@ func (u *UserDao) QueryUserById(id int64) (*UserInfo, error) {
 	userInfo.Id = user.Id
 	userInfo.Username = user.Username
 	// 这里剩下三个数据需要查表获得
-	userInfo.FollowCount = 0
-	userInfo.FollowerCount = 0
-	userInfo.IsFollow = false
+	// userInfo.FollowCount = 0
+	// userInfo.FollowerCount = 0
+	// userInfo.IsFollow = false
 
 	return userInfo, nil
 }

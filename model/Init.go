@@ -44,6 +44,12 @@ func InitMySQL() (err error) {
 			panic(err)
 		}
 	}
+	if !db.HasTable(&Follow{}) {
+		err := db.CreateTable(&Follow{})
+		if err != nil {
+			panic(err)
+		}
+	}
 	if !db.HasTable(&Favorite{}) {
 		err := db.CreateTable(&Favorite{})
 		if err != nil {

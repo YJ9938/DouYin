@@ -138,6 +138,7 @@ func Login(c *gin.Context) {
 	})
 }
 
+// userid 可能是别人的id  token 是使用者信息
 func UserInfo(c *gin.Context) {
 	//取出待查询用户ID
 	rawId := c.Query("user_id")
@@ -151,14 +152,11 @@ func UserInfo(c *gin.Context) {
 	}
 	rawCurrentId := claims.Id
 	currentId, _ := strconv.ParseInt(rawCurrentId, 10, 64)
-	if queryId != currentId {
-		Error(c, 1, "身份鉴权失败")
-		return
-	}
 
 	userInfoService := service.UserInfoService{
 		CurrentUser: currentId,
 		QueryUser:   queryId,
+		// 这两个id 根据文档 是同一个id
 	}
 	user, err := userInfoService.QueryUserInfoById()
 	if err != nil {
