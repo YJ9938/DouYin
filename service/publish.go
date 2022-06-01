@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/YJ9938/DouYin/model"
+	"DouYin/model"
 )
 
 type PublishService struct {

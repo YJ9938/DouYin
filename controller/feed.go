@@ -5,8 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/YJ9938/DouYin/model"
-	"github.com/YJ9938/DouYin/service"
+	"DouYin/model"
+	"DouYin/service"
+
 	"github.com/gin-gonic/gin"
 )
 

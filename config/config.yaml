@@ -15,5 +15,5 @@ jwt:
 static:
   path: ./static
 localip:
-  ip: 10.116.89.246
+  ip: 192.168.10.1
   port: 8080

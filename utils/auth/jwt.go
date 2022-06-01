@@ -4,7 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/YJ9938/DouYin/model"
+	"DouYin/model"
+
 	"github.com/dgrijalva/jwt-go"
 )
 

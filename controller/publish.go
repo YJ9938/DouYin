@@ -6,10 +6,11 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/YJ9938/DouYin/config"
-	"github.com/YJ9938/DouYin/model"
-	"github.com/YJ9938/DouYin/service"
-	"github.com/YJ9938/DouYin/utils/cover"
+	"DouYin/config"
+	"DouYin/model"
+	"DouYin/service"
+	"DouYin/utils/cover"
+
 	"github.com/gin-gonic/gin"
 )
 

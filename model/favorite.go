@@ -20,11 +20,11 @@ func AddFavorite(userID int64, videoID int64) int {
 		VideoID: videoID,
 	}
 	// 在favorite表中添加该记录
-	if db.Create(favorite).Error != nil {
+	if DB.Create(favorite).Error != nil {
 		return 2
 	}
 	// 更新video表中的点赞数
-	if db.Model(&Video{}).Where("id = ?", videoID).Update("favorite_count", gorm.Expr("favorite_count + 1")).Error != nil {
+	if DB.Model(&Video{}).Where("id = ?", videoID).Update("favorite_count", gorm.Expr("favorite_count + 1")).Error != nil {
 		return 2
 	}
 	return 0
@@ -36,11 +36,11 @@ func DeleteFavorite(userID int64, videoID int64) int {
 		return 1
 	}
 	// 在favorite表中删除该记录
-	if db.Where("user_id = ? AND video_id = ?", userID, videoID).Delete(&Favorite{}).Error != nil {
+	if DB.Where("user_id = ? AND video_id = ?", userID, videoID).Delete(&Favorite{}).Error != nil {
 		return 2
 	}
 	// 更新video表中的点赞数
-	if db.Model(&Video{}).Where("id = ?", videoID).Update("favorite_count", gorm.Expr("favorite_count - 1")).Error != nil {
+	if DB.Model(&Video{}).Where("id = ?", videoID).Update("favorite_count", gorm.Expr("favorite_count - 1")).Error != nil {
 		return 2
 	}
 	return 0
@@ -50,7 +50,7 @@ func DeleteFavorite(userID int64, videoID int64) int {
 func GetFavoriteVideoList(userID int64) ([]*VideoAuthorUnion, error) {
 	var favorites []*VideoAuthorUnion
 	sql := "SELECT v.ID AS id, u.id AS author_id, u.username AS author_name, v.play_url AS play_url, v.cover_url AS cover_url, v.favorite_count AS favorite_count FROM users u LEFT JOIN favorites f ON u.id = f.user_id LEFT JOIN videos v  ON f.video_id = v.id WHERE user_id = ?"
-	err := db.Raw(sql, userID).Scan(&favorites).Error
+	err := DB.Raw(sql, userID).Scan(&favorites).Error
 
 	if err != nil {
 		return nil, err
@@ -60,5 +60,5 @@ func GetFavoriteVideoList(userID int64) ([]*VideoAuthorUnion, error) {
 
 // IsFavorite 判断是否已经点赞
 func IsFavorite(userID int64, videoID int64) bool {
-	return db.First(&Favorite{}, "user_id = ? and video_id = ?", userID, videoID).Error == nil
+	return DB.First(&Favorite{}, "user_id = ? and video_id = ?", userID, videoID).Error == nil
 }

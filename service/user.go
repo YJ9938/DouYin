@@ -1,6 +1,6 @@
 package service
 
-import "github.com/YJ9938/DouYin/model"
+import "DouYin/model"
 
 type UserInfoService struct {
 	CurrentUser int64

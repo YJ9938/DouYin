@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/YJ9938/DouYin/model"
-	"github.com/YJ9938/DouYin/router"
+	"DouYin/model"
+	"DouYin/router"
+
 	"github.com/gin-gonic/gin"
 )
 

@@ -3,7 +3,8 @@ package model
 import (
 	"fmt"
 
-	"github.com/YJ9938/DouYin/config"
+	"DouYin/config"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
