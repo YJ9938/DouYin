@@ -49,17 +49,6 @@ func (f *FollowService) CountFollower() error {
 func (f *FollowService) IsFollowFunc() {
 	followActionDao := model.NewFollowActionDao()
 	f.IsFollow = followActionDao.IsFollow(f.CurrentUser, f.ToUser)
-	// num, err := followActionDao.IsFollow(f.CurrentUser, f.ToUser)
-	// if err != nil {
-	// 	fmt.Println("查询是否关注出错, err:", err)
-	// 	return err
-	// }
-	// if num == 0 {
-	// 	f.IsFollow = false
-	// } else {
-	// 	f.IsFollow = true
-	// }
-	// return nil
 }
 
 func (f *FollowService) UserIdList() ([]int64, error) {

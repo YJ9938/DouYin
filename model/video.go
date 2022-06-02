@@ -44,6 +44,12 @@ func (v *VideoDao) AddVideo(video *Video) error {
 	return DB.Create(video).Error
 }
 
+func (vd *VideoDao) QueryVideoByVideoId(id int64) (Video, error) {
+	video := Video{}
+	err := DB.Model(&Video{}).Where("id = ?", id).Find(&video).Error
+	return video, err
+}
+
 func (vd *VideoDao) QueryVideosByUserId(id int64) ([]Video, error) {
 	videoList := make([]Video, 0, 30)
 	err := DB.Model(&Video{}).Where("author_id = ?", id).Order("created_at ASC").Limit(30).Find(&videoList).Error

@@ -16,7 +16,7 @@ type FollowResponse struct {
 
 type FollowListResponse struct {
 	Response
-	UserList []model.UserInfo `json:"user_list, omitempty"`
+	UserList []model.UserInfo `json:"user_list,omitempty"`
 }
 
 // 关注操作  apk post请求没有user_id 参数
@@ -61,7 +61,7 @@ func RelationAction(c *gin.Context) {
 		Action_type: actiontype,
 	}
 	if err := followService.FollowAction(); err != nil {
-		Error(c, 1, "关注信息写入数据库出错")
+		Error(c, 1, err.Error())
 		return
 	} else {
 		msg := ""
@@ -113,6 +113,7 @@ func FollowList(c *gin.Context) {
 			Response: Response{StatusCode: 1, StatusMsg: "查询关注列表出错"},
 			UserList: nil,
 		})
+		return
 	}
 	c.JSON(http.StatusOK, FollowListResponse{
 		Response: Response{StatusCode: 0, StatusMsg: "查询关注列表成功"},

@@ -61,8 +61,8 @@ func (f *FollowActionDao) CountFollower(id int64) ([]Follow, error) {
 
 func (f *FollowActionDao) IsFollow(from, to int64) bool {
 	var num int64 = 0
-	DB.Model(&Follow{}).Where("follower_id = ? AND followee_id = ?", from, to).Count(&num)
-	if num == 0 {
+	tx := DB.Model(&Follow{}).Where("follower_id = ? AND followee_id = ? AND deleted_at IS NULL", from, to).Count(&num)
+	if tx.Error != nil || num == 0 {
 		return false
 	} else {
 		return true
