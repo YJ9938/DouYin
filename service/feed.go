@@ -25,10 +25,13 @@ func (f *FeedService) QueryFeed() ([]model.VideoDisplay, error) {
 		videoDisplay.CoverUrl = videoList[i].CoverURL
 		videoDisplay.Author, _ = userDao.QueryUserById(videoList[i].AuthorID)
 		// 下面三个需要查表
-		videoDisplay.IsFavorite = false
-		videoDisplay.CommentCount = 0
-		videoDisplay.FavoriteCount = 0
-		//
+		// videoDisplay.IsFavorite = false
+		// videoDisplay.CommentCount = 0
+		// videoDisplay.FavoriteCount = 0
+		videoDisplay.IsFavorite, _ = model.NewFavoriteDao().IsFavorite(videoList[i].AuthorID, videoDisplay.Id)
+		videoDisplay.CommentCount, _ = model.NewCommentDao().QueryCommentCountByVideoId(videoDisplay.Id)
+		videoDisplay.FavoriteCount, _ = model.NewFavoriteDao().QueryFavoriteCountByVideoId(videoDisplay.Id)
+
 		videoDisplayList = append(videoDisplayList, videoDisplay)
 	}
 	return videoDisplayList, err

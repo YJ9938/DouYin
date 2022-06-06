@@ -42,20 +42,20 @@ func (f *FollowActionDao) AddFollow(from, to int64) error {
 }
 
 func (f *FollowActionDao) DeleteFollow(from, to int64) error {
-	return DB.Where("follower_id = ? AND followee_id = ?", from, to).Delete(&Follow{}).Error
+	return DB.Where("follower_id = ? AND followee_id = ? AND deleted_at IS NULL", from, to).Delete(&Follow{}).Error
 }
 
 // 查找关注数 根据er的id 查找 ee list
 func (f *FollowActionDao) CountFollowee(id int64) ([]Follow, error) {
 	list := make([]Follow, 0, 30)
-	tx := DB.Model(&Follow{}).Where("follower_id = ?", id).Find(&list)
+	tx := DB.Model(&Follow{}).Where("follower_id = ? AND deleted_at IS NULL", id).Find(&list)
 	return list, tx.Error
 }
 
 // 查找粉丝数 根据ee的id 查找 er list
 func (f *FollowActionDao) CountFollower(id int64) ([]Follow, error) {
 	list := make([]Follow, 0, 30)
-	tx := DB.Model(&Follow{}).Where("followee_id = ?", id).Find(&list)
+	tx := DB.Model(&Follow{}).Where("followee_id = ? AND deleted_at IS NULL", id).Find(&list)
 	return list, tx.Error
 }
 

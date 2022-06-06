@@ -66,7 +66,7 @@ func (u *UserDao) QueryUserById(id int64) (*UserInfo, error) {
 
 func (u *UserDao) AddUser(user *User) error {
 	var count int64
-	if err := DB.Table("users").Where("username =?", user.Username).Count(&count).Error; err != nil {
+	if err := DB.Table("users").Where("username =? ", user.Username).Count(&count).Error; err != nil {
 		return err
 	}
 	if count != 0 {
@@ -77,7 +77,8 @@ func (u *UserDao) AddUser(user *User) error {
 
 func (u *UserDao) QueryUserByName(name string) (*User, error) {
 	var user User
-	err := DB.Where(&User{Username: name}, "username").First(&user).Error
+	// err := DB.Where(&User{Username: name}, "username").First(&user).Error
+	err := DB.Model(&User{}).Where("username = ? ", name).First(&user).Error
 	if err == gorm.ErrRecordNotFound {
 		return nil, ErrUserNotExists
 	}

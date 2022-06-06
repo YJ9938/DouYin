@@ -58,8 +58,10 @@ func (f *FavoriteService) FavoriteList() ([]model.VideoDisplay, error) {
 		videoInfo.Author, _ = userInfoService.QueryUserInfoById()
 		videoInfo.IsFavorite = true // 已经点赞
 		// 下面需要完善
-		videoInfo.FavoriteCount = 0
-		videoInfo.CommentCount = 0
+		// videoInfo.FavoriteCount = 0
+		// videoInfo.CommentCount = 0
+		videoInfo.FavoriteCount, _ = model.NewFavoriteDao().QueryFavoriteCountByVideoId(id)
+		videoInfo.CommentCount, _ = model.NewCommentDao().QueryCommentCountByVideoId(id)
 
 		videoInfoList = append(videoInfoList, videoInfo)
 	}

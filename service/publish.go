@@ -38,9 +38,13 @@ func (p *PublishService) PublishList() ([]model.VideoDisplay, error) {
 		videoDisplay.CoverUrl = videoList[i].CoverURL
 		videoDisplay.Author = userInfo
 		//下面三个 需要使用函数查询
-		videoDisplay.FavoriteCount = 0
-		videoDisplay.CommentCount = 0
-		videoDisplay.IsFavorite = false
+		// videoDisplay.FavoriteCount = 0
+		// videoDisplay.CommentCount = 0
+		// videoDisplay.IsFavorite = false
+		videoDisplay.FavoriteCount, _ = model.NewFavoriteDao().QueryFavoriteCountByVideoId(videoDisplay.Id)
+		videoDisplay.CommentCount, _ = model.NewCommentDao().QueryCommentCountByVideoId(videoDisplay.Id)
+		videoDisplay.IsFavorite, _ = model.NewFavoriteDao().IsFavorite(videoDisplay.Author.Id, videoDisplay.Id)
+
 		videoDisplayList = append(videoDisplayList, videoDisplay)
 	}
 	return videoDisplayList, err
