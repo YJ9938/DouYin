@@ -34,9 +34,10 @@ type UserInfo struct {
 	// FollowCount   int64 `json:"follow_count,omitempty"`
 	// FollowerCount int64 `json:"follower_count,omitempty"`
 	// IsFollow      bool  `json:"is_follow,omitempty"`
-	FollowCount   int64 `json:"follow_count"`
-	FollowerCount int64 `json:"follower_count"`
-	IsFollow      bool  `json:"is_follow"`
+	FollowCount    int64 `json:"follow_count"`
+	FollowerCount  int64 `json:"follower_count"`
+	IsFollow       bool  `json:"is_follow"`
+	Favorite_count int64 `json:"favorite_count"`
 }
 
 func NewUserDao() *UserDao {

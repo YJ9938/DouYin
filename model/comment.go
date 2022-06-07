@@ -24,11 +24,12 @@ func (c *CommentDao) AddComment(userid, videoid int64, content string) (int64, e
 		VideoID: videoid,
 		Content: content,
 	}
-	return int64(comment.ID), DB.Create(comment).Error
+	err := DB.Create(comment).Error
+	return int64(comment.ID), err
 }
 
 func (c *CommentDao) QueryCommentCountByVideoId(videoid int64) (int64, error) {
-	var count int64
+	var count int64 = 0
 	err := DB.Model(&Comment{}).Where("video_id = ? AND deleted_at IS NULL", videoid).Count(&count).Error
 	return count, err
 }

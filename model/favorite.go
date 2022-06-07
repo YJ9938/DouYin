@@ -18,7 +18,7 @@ func NewFavoriteDao() *FavoriteDao {
 }
 
 func (f *FavoriteDao) AddFavorite(userid, videoid int64) error {
-	var count int64
+	var count int64 = 0
 	if err := DB.Table("favorites").Where("user_id = ? AND video_id = ? AND deleted_at IS NULL", userid, videoid).Count(&count).Error; err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func (f *FavoriteDao) AddFavorite(userid, videoid int64) error {
 }
 
 func (f *FavoriteDao) IsFavorite(userid, videoid int64) (bool, error) {
-	var count int64
+	var count int64 = 0
 	err := DB.Model(&Favorite{}).Where("user_id = ? AND video_id = ? AND deleted_at IS NULL", userid, videoid).Count(&count).Error
 	if err != nil || count == 0 {
 		return false, err
@@ -44,7 +44,7 @@ func (f *FavoriteDao) IsFavorite(userid, videoid int64) (bool, error) {
 
 // 获取视频点赞数
 func (f *FavoriteDao) QueryFavoriteCountByVideoId(videoid int64) (int64, error) {
-	var count int64
+	var count int64 = 0
 	err := DB.Model(&Favorite{}).Where("video_id = ? AND deleted_at IS NULL", videoid).Count(&count).Error
 	return count, err
 }

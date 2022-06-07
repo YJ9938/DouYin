@@ -8,6 +8,7 @@ import (
 
 type FeedService struct {
 	LatestTime time.Time
+	UserId     int64
 }
 
 func (f *FeedService) QueryFeed() ([]model.VideoDisplay, error) {
@@ -28,7 +29,11 @@ func (f *FeedService) QueryFeed() ([]model.VideoDisplay, error) {
 		// videoDisplay.IsFavorite = false
 		// videoDisplay.CommentCount = 0
 		// videoDisplay.FavoriteCount = 0
-		videoDisplay.IsFavorite, _ = model.NewFavoriteDao().IsFavorite(videoList[i].AuthorID, videoDisplay.Id)
+		if f.UserId != -1 {
+			videoDisplay.IsFavorite, _ = model.NewFavoriteDao().IsFavorite(f.UserId, videoDisplay.Id)
+		} else {
+			videoDisplay.IsFavorite = false
+		} //如果登录，则看是否点赞此视频
 		videoDisplay.CommentCount, _ = model.NewCommentDao().QueryCommentCountByVideoId(videoDisplay.Id)
 		videoDisplay.FavoriteCount, _ = model.NewFavoriteDao().QueryFavoriteCountByVideoId(videoDisplay.Id)
 

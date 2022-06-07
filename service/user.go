@@ -27,6 +27,8 @@ func (u *UserInfoService) QueryUserInfoById() (*model.UserInfo, error) {
 	user.FollowCount = follow.FolloweeCount
 	user.FollowerCount = follow.FollowerCount
 	user.IsFollow = follow.IsFollow
+	list, _ := model.NewFavoriteDao().FavoriteList(u.CurrentUser)
+	user.Favorite_count = int64(len(list))
 
 	return user, err
 }

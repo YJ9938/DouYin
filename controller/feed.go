@@ -25,9 +25,18 @@ func Feed(c *gin.Context) {
 	} else {
 		latestTime = time.UnixMilli(rawTime)
 	}
+
+	token := c.Query("token")
+	claims := parseToken(token)
+	var userid int64 = -1
+	if token != "" && claims != nil {
+		userid, _ = strconv.ParseInt(claims.Id, 10, 64)
+	}
+
 	// fmt.Println("rawTime:", rawTime, " latestTime:", latestTime)
 	feedService := service.FeedService{
 		LatestTime: latestTime,
+		UserId:     userid,
 	}
 	videoList, err := feedService.QueryFeed()
 	if err != nil {

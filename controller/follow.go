@@ -151,7 +151,7 @@ func FollowerList(c *gin.Context) {
 
 	userlist, err := followservice.UserList()
 	if err != nil {
-		fmt.Println("查询关注列表出错, err:", err)
+		fmt.Println("查询粉丝列表出错, err:", err)
 		c.JSON(http.StatusOK, FollowListResponse{
 			Response: Response{StatusCode: 1, StatusMsg: "查询粉丝列表出错"},
 			UserList: nil,
