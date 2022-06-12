@@ -1,7 +1,7 @@
 package service
 
 import (
-	"fmt"
+	"log"
 	"time"
 
 	"github.com/YJ9938/DouYin/model"
@@ -17,17 +17,25 @@ type CommentData struct {
 type CommentService struct {
 	User_id     int64
 	Video_id    int64
-	Action_type int64
+	Action_type int
 	Content     string
 	CommentId   int64
 }
+
+// Action type
+type CommentActionType = int
+
+const (
+	AddCommentActionType CommentActionType = 1
+	DelCommentActionType CommentActionType = 2
+)
 
 func (c *CommentService) CommentAction() (CommentData, error) {
 	commentDao := model.NewCommentDao()
 	var err error
 	var CommentId int64
 	commentData := CommentData{}
-	if c.Action_type == 1 {
+	if c.Action_type == AddCommentActionType {
 		CommentId, err = commentDao.AddComment(c.User_id, c.Video_id, c.Content)
 	} else {
 		CommentId, err = commentDao.DeleteComment(c.CommentId)
@@ -52,7 +60,7 @@ func (c *CommentService) CommentList() ([]CommentData, error) {
 	CommentList := make([]CommentData, 0, 30)
 	list, err := commentDao.CommentList(c.Video_id)
 	if err != nil {
-		fmt.Println("获取评论列表出错, err:", err)
+		log.Println("获取评论列表出错, err:", err)
 		return nil, err
 	}
 

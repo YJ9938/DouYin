@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -26,17 +27,17 @@ func CommentAction(c *gin.Context) {
 
 	if rawVideoId == "" || rawActionType == "" {
 		c.JSON(http.StatusOK, CommentResponse{
-			Response: Response{StatusCode: 1, StatusMsg: "参数获取失败"},
+			Response: Response{StatusCode: http.StatusBadRequest, StatusMsg: "参数获取失败"},
 			Comment:  service.CommentData{},
 		})
 		return
 	}
 
 	video_id, _ := strconv.ParseInt(rawVideoId, 10, 64)
-	actiontype, _ := strconv.ParseInt(rawActionType, 10, 64)
-	if actiontype != 1 && actiontype != 2 {
+	actiontype, _ := strconv.Atoi(rawActionType)
+	if actiontype != service.AddCommentActionType && actiontype != service.DelCommentActionType {
 		c.JSON(http.StatusOK, CommentResponse{
-			Response: Response{StatusCode: 1, StatusMsg: "操作类型不符"},
+			Response: Response{StatusCode: http.StatusBadRequest, StatusMsg: "操作类型不符"},
 			Comment:  service.CommentData{},
 		})
 		return
@@ -53,18 +54,17 @@ func CommentAction(c *gin.Context) {
 	}
 
 	if comment, err := commentService.CommentAction(); err != nil {
+		log.Printf("error while doing comment action: %s\n", err)
 		c.JSON(http.StatusOK, CommentResponse{
-			Response: Response{StatusCode: 1, StatusMsg: "评论操作信息写入数据库出错"},
+			Response: Response{StatusCode: 1, StatusMsg: "内部错误"},
 			Comment:  service.CommentData{},
 		})
-		return
 	} else {
-		msg := ""
-		if actiontype == 1 {
-			msg = "评论成功"
-		} else {
+		msg := "评论成功"
+		if actiontype == service.DelCommentActionType {
 			msg = "删除评论成功"
 		}
+
 		c.JSON(http.StatusOK, CommentResponse{
 			Response: Response{StatusCode: 0, StatusMsg: msg},
 			Comment:  comment,
