@@ -8,7 +8,7 @@ import (
 	"github.com/YJ9938/DouYin/config"
 	"github.com/YJ9938/DouYin/model"
 	"github.com/YJ9938/DouYin/service"
-	"github.com/YJ9938/DouYin/utils/cover"
+	"github.com/YJ9938/DouYin/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -46,7 +46,7 @@ func Publish(c *gin.Context) {
 	}
 	// 生成视频 封面 url链接
 	coverPath := "./public/cover/" + videoName
-	coverName, _ := cover.GenerateCover(videoPath, coverPath, 1)
+	coverName, _ := utils.GenerateCover(videoPath, coverPath, 1)
 
 	playURL := "http://" + config.C.LocalIp.Ip + ":" + config.C.LocalIp.Port + "/static/video/" + videoName
 	coverURL := "http://" + config.C.LocalIp.Ip + ":" + config.C.LocalIp.Port + "/static/cover/" + coverName

@@ -1,4 +1,4 @@
-package cover
+package utils
 
 import (
 	"bytes"
