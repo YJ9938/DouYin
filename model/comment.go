@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -38,6 +39,8 @@ func commentKey(videoID int64) string {
 	return fmt.Sprintf("comment:%d", videoID)
 }
 
+const commentKeyExpiration = time.Hour
+
 func (c *CommentDao) AddComment(userid, videoid int64, content string) (int64, error) {
 	// Insert into MySQL
 	comment := &Comment{
@@ -52,7 +55,7 @@ func (c *CommentDao) AddComment(userid, videoid int64, content string) (int64, e
 	// Insert into existing cache
 	ctx := context.Background()
 	keyString := commentKey(videoid)
-	if RDB.Exists(ctx, keyString).Val() == 0 {
+	if RDB.Exists(ctx, keyString).Val() == 1 {
 		return int64(comment.ID), RDB.HSet(ctx, keyString, fmt.Sprint(comment.ID), comment).Err()
 	}
 	return int64(comment.ID), nil
@@ -95,6 +98,7 @@ func (c *CommentDao) CommentList(videoid int64) ([]Comment, error) {
 	ctx := context.Background()
 	keyString := commentKey(videoid)
 	if RDB.Exists(ctx, keyString).Val() == 1 {
+		RDB.Expire(ctx, keyString, commentKeyExpiration)
 		commentStrings, err := RDB.HGetAll(ctx, keyString).Result()
 		if err != nil {
 			return nil, err
@@ -126,7 +130,11 @@ func (c *CommentDao) CommentList(videoid int64) ([]Comment, error) {
 			bytes, _ := json.Marshal(comments[i])
 			pairs = append(pairs, fmt.Sprint(comments[i].ID), string(bytes))
 		}
-		return comments, RDB.HSet(ctx, keyString, pairs).Err()
+
+		if err := RDB.HSet(ctx, keyString, pairs).Err(); err != nil {
+			return comments, err
+		}
+		return comments, RDB.Expire(ctx, keyString, commentKeyExpiration).Err()
 	}
 	return comments, nil
 }
