@@ -63,7 +63,7 @@ func (c *CommentDao) QueryCommentCountByVideoId(videoid int64) (int64, error) {
 	ctx := context.Background()
 	keyString := commentKey(videoid)
 	if RDB.Exists(ctx, keyString).Val() == 1 {
-		return RDB.LLen(ctx, keyString).Result()
+		return RDB.HLen(ctx, keyString).Result()
 	}
 
 	// Otherwise we must get comments from MySQL(where cache will be updated)
