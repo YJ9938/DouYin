@@ -120,10 +120,13 @@ func (c *CommentDao) CommentList(videoid int64) ([]Comment, error) {
 		return nil, err
 	}
 
-	pairs := make([]string, 0, len(comments)*2)
-	for i := 0; i < len(comments); i++ {
-		bytes, _ := json.Marshal(comments[i])
-		pairs = append(pairs, fmt.Sprint(comments[i].ID), string(bytes))
+	if len(comments) > 0 {
+		pairs := make([]string, 0, len(comments)*2)
+		for i := 0; i < len(comments); i++ {
+			bytes, _ := json.Marshal(comments[i])
+			pairs = append(pairs, fmt.Sprint(comments[i].ID), string(bytes))
+		}
+		return comments, RDB.HSet(ctx, keyString, pairs).Err()
 	}
-	return comments, RDB.HSet(ctx, keyString, pairs).Err()
+	return comments, nil
 }
