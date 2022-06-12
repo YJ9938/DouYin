@@ -148,15 +148,9 @@ func UserInfo(c *gin.Context) {
 	//取出待查询用户ID
 	rawId := c.Query("user_id")
 	user_id, _ := strconv.ParseInt(rawId, 10, 64)
+
 	//从token取出当前用户ID
-	token := c.Query("token")
-	claims := parseToken(token)
-	if claims == nil || claims.Id != rawId {
-		Error(c, 1, "身份鉴权失败")
-		return
-	}
-	rawCurrentId := claims.Id
-	currentId, _ := strconv.ParseInt(rawCurrentId, 10, 64)
+	currentId := c.GetInt64("id")
 
 	userInfoService := service.UserInfoService{
 		CurrentUser: currentId,

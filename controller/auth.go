@@ -17,25 +17,14 @@ type Claims struct {
 
 var secretKey = []byte(config.C.JWT.SecretKey)
 
-func getUserID(c *gin.Context) int64 {
-	// token's user ID
-	idVal, exists := c.Get("id")
-	if !exists {
-		log.Panicf("id %v not found\n", idVal)
-	}
-	var id int64
-	fmt.Sscanf(idVal.(string), "%d", &id)
-
-	return id
-}
-
+// Auth middleware used to handle authentication for every route that needs auth
 func AuthMiddleware(c *gin.Context) {
 	// Check the token parameter
 	token := c.Query("token")
 	if token == "" {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, Response{
-			StatusCode: http.StatusUnauthorized,
-			StatusMsg:  "用户认证错误",
+		c.AbortWithStatusJSON(http.StatusOK, Response{
+			StatusCode: 1,
+			StatusMsg:  "鉴权参数错误",
 		})
 		return
 	}
@@ -43,13 +32,15 @@ func AuthMiddleware(c *gin.Context) {
 	// Check the token is valid and store user ID to the context
 	claims := parseToken(token)
 	if claims == nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, Response{
-			StatusCode: http.StatusUnauthorized,
-			StatusMsg:  "用户认证错误",
+		c.AbortWithStatusJSON(http.StatusOK, Response{
+			StatusCode: 1,
+			StatusMsg:  "用户鉴权错误错误",
 		})
 		return
 	}
-	fmt.Printf("%#v\n", claims)
+	log.Printf("Token user ID: %s\n", claims.Id)
+
+	// If auth success, we pass an 'id' to gin's context
 	c.Set("id", claims.Id)
 }
 

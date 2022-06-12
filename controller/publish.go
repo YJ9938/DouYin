@@ -84,21 +84,6 @@ func PublishList(c *gin.Context) {
 	rawId := c.Query("user_id")
 	userId, _ := strconv.ParseInt(rawId, 10, 64)
 	// fmt.Println(userId)
-	token := c.Query("token")
-	if token == "" {
-		c.JSON(http.StatusOK, PublishListResponse{
-			Response: Response{StatusCode: 1, StatusMsg: "token错误"},
-		})
-		return
-	}
-
-	claims := parseToken(token)
-	if claims == nil || claims.Id != rawId {
-		c.JSON(http.StatusOK, PublishListResponse{
-			Response: Response{StatusCode: 1, StatusMsg: "token鉴权失败"},
-		})
-		return
-	}
 
 	publishService := service.PublishService{
 		Id: userId,

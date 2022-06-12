@@ -22,11 +22,9 @@ type FollowListResponse struct {
 // 关注操作  apk post请求没有user_id 参数
 func RelationAction(c *gin.Context) {
 	// Get Parameters
-	// user_id := c.Query("user_id")
-	token := c.Query("token")
 	to_user_id := c.Query("to_user_id")
 	action_type := c.Query("action_type")
-	if token == "" || to_user_id == "" || action_type == "" {
+	if to_user_id == "" || action_type == "" {
 		Error(c, 1, "获取参数失败")
 		// fmt.Println("user_id:", user_id, "\ntoken:", token, "\nto_user_id:", to_user_id, "\naction_type:", action_type)
 		return
@@ -38,14 +36,8 @@ func RelationAction(c *gin.Context) {
 		return
 	}
 
-	// verify the token
-	claims := parseToken(token)
-	if claims == nil {
-		Error(c, 1, "身份鉴权失败")
-		return
-	}
 	// queryId, _ := strconv.ParseInt(user_id, 10, 64)
-	currentId, _ := strconv.ParseInt(claims.Id, 10, 64)
+	currentId := c.GetInt64("id")
 	toUserId, _ := strconv.ParseInt(to_user_id, 10, 64)
 
 	// if queryId != currentId {
@@ -83,8 +75,7 @@ func RelationAction(c *gin.Context) {
 func FollowList(c *gin.Context) {
 	// Get Parameters
 	rawId := c.Query("user_id")
-	token := c.Query("token")
-	if rawId == "" || token == "" {
+	if rawId == "" {
 		c.JSON(http.StatusOK, FollowListResponse{
 			Response: Response{StatusCode: 1, StatusMsg: "参数获取出错"},
 		})
@@ -92,12 +83,6 @@ func FollowList(c *gin.Context) {
 
 	// verify the token
 	userId, _ := strconv.ParseInt(rawId, 10, 64)
-	claims := parseToken(token)
-	if claims == nil || claims.Id != rawId {
-		c.JSON(http.StatusOK, FollowListResponse{
-			Response: Response{StatusCode: 1, StatusMsg: "用户鉴权失败"},
-		})
-	}
 
 	// read database
 	// 复用 actiontype
@@ -126,8 +111,7 @@ func FollowList(c *gin.Context) {
 func FollowerList(c *gin.Context) {
 	// Get Parameters
 	rawId := c.Query("user_id")
-	token := c.Query("token")
-	if rawId == "" || token == "" {
+	if rawId == "" {
 		c.JSON(http.StatusOK, FollowListResponse{
 			Response: Response{StatusCode: 1, StatusMsg: "参数获取出错"},
 		})
@@ -135,12 +119,6 @@ func FollowerList(c *gin.Context) {
 
 	// verify the token
 	userId, _ := strconv.ParseInt(rawId, 10, 64)
-	claims := parseToken(token)
-	if claims == nil || claims.Id != rawId {
-		c.JSON(http.StatusOK, FollowListResponse{
-			Response: Response{StatusCode: 1, StatusMsg: "用户鉴权失败"},
-		})
-	}
 
 	// read database
 	// 复用 actiontype

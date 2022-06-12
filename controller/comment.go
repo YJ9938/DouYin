@@ -19,14 +19,12 @@ type CommentListResponse struct {
 }
 
 func CommentAction(c *gin.Context) {
-	// rawId := c.Query("query")
-	token := c.Query("token")
 	rawVideoId := c.Query("video_id")
 	rawActionType := c.Query("action_type")
 	comment_text := c.Query("comment_text")
 	rawcomment_id := c.Query("comment_id")
 
-	if token == "" || rawVideoId == "" || rawActionType == "" {
+	if rawVideoId == "" || rawActionType == "" {
 		c.JSON(http.StatusOK, CommentResponse{
 			Response: Response{StatusCode: 1, StatusMsg: "参数获取失败"},
 			Comment:  service.CommentData{},
@@ -44,16 +42,7 @@ func CommentAction(c *gin.Context) {
 		return
 	}
 
-	claims := parseToken(token)
-	if claims == nil {
-		c.JSON(http.StatusOK, CommentResponse{
-			Response: Response{StatusCode: 1, StatusMsg: "用户鉴权失败"},
-			Comment:  service.CommentData{},
-		})
-		return
-	}
-
-	user_id, _ := strconv.ParseInt(claims.Id, 10, 64)
+	user_id := c.GetInt64("id")
 	comment_id, _ := strconv.ParseInt(rawcomment_id, 10, 64)
 	commentService := service.CommentService{
 		User_id:     user_id,
@@ -81,13 +70,11 @@ func CommentAction(c *gin.Context) {
 			Comment:  comment,
 		})
 	}
-
 }
 
 func CommentList(c *gin.Context) {
-	token := c.Query("token")
 	rawVideoId := c.Query("video_id")
-	if token == "" || rawVideoId == "" {
+	if rawVideoId == "" {
 		c.JSON(http.StatusOK, CommentListResponse{
 			Response:    Response{StatusCode: 1, StatusMsg: "参数获取出错"},
 			CommentList: nil,
@@ -95,16 +82,7 @@ func CommentList(c *gin.Context) {
 		return
 	}
 
-	claims := parseToken(token)
-	if claims == nil {
-		c.JSON(http.StatusOK, CommentListResponse{
-			Response:    Response{StatusCode: 1, StatusMsg: "token鉴权失败"},
-			CommentList: nil,
-		})
-		return
-	}
-
-	user_id, _ := strconv.ParseInt(claims.Id, 10, 64)
+	user_id := c.GetInt64("id")
 	video_id, _ := strconv.ParseInt(rawVideoId, 10, 64)
 	commentService := service.CommentService{
 		Video_id: video_id,
@@ -123,5 +101,4 @@ func CommentList(c *gin.Context) {
 			CommentList: commentList,
 		})
 	}
-
 }

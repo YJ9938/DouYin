@@ -21,10 +21,9 @@ type FavoriteListResponse struct {
 // 因为response 和 Response一样, 在错误处理时使用 Error
 func FavoriteAction(c *gin.Context) {
 	//rawId := c.Query("user_id")
-	token := c.Query("token")
 	rawVideoId := c.Query("video_id")
 	rawActionType := c.Query("action_type")
-	if token == "" || rawVideoId == "" || rawActionType == "" {
+	if rawVideoId == "" || rawActionType == "" {
 		Error(c, 1, "参数获取失败")
 		return
 	}
@@ -37,12 +36,7 @@ func FavoriteAction(c *gin.Context) {
 		return
 	}
 
-	claims := parseToken(token)
-	if claims == nil {
-		Error(c, 1, "身份鉴权失败")
-		return
-	}
-	user_id, _ := strconv.ParseInt(claims.Id, 10, 64)
+	user_id := c.GetInt64("id")
 
 	// write to databse
 	favoriteService := service.FavoriteService{
@@ -69,17 +63,14 @@ func FavoriteAction(c *gin.Context) {
 
 func FavoriteList(c *gin.Context) {
 	rawId := c.Query("user_id")
-	token := c.Query("token")
+	user_id, _ := strconv.ParseInt(rawId, 10, 64)
 
-	claims := parseToken(token)
-	if claims == nil || claims.Id != rawId {
-		c.JSON(http.StatusOK, FavoriteListResponse{
-			Response:  Response{StatusCode: 1, StatusMsg: "token鉴权失败"},
-			VideoList: nil,
-		})
+	tokenID := c.GetInt64("id")
+	if user_id != tokenID {
+		Error(c, 1, "你不能查看别人的点赞列表")
+		return
 	}
 
-	user_id, _ := strconv.ParseInt(rawId, 10, 64)
 	favoroteService := service.FavoriteService{
 		User_id: user_id,
 	}
