@@ -8,6 +8,8 @@ type Favorite struct {
 	gorm.Model
 	UserID  int64 `gorm:"not null; index:idx_userid_videoid" json:"user_id"`
 	VideoID int64 `gorm:"not null; index:idx_userid_videoid" json:"video_id"`
+	Video   Video `gorm:"foreignkey:VideoID;association_foreignkey:ID"`
+	User    User  `gorm:"foreignkey:UserID;association_foreignkey:ID"`
 }
 
 type FavoriteDao struct {
