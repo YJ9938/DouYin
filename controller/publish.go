@@ -26,17 +26,7 @@ type PublishListResponse struct {
 func Publish(c *gin.Context) {
 	// 从POST请求 读取参数
 	title := c.PostForm("title")
-	//从token取出当前用户ID
-	token := c.PostForm("token")
-	claims := parseToken(token)
-	if claims == nil {
-		c.JSON(http.StatusOK, PublishResponse{
-			Response: Response{StatusCode: 1, StatusMsg: "身份鉴权失败"},
-		})
-		return
-	}
-	rawUserId := claims.Id
-	userId, _ := strconv.ParseInt(rawUserId, 10, 64)
+	userId := c.GetInt64("id")
 	// 读取data数据
 	data, err := c.FormFile("data")
 	if err != nil {

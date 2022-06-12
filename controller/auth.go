@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/YJ9938/DouYin/config"
@@ -17,13 +18,21 @@ type Claims struct {
 
 var secretKey = []byte(config.C.JWT.SecretKey)
 
+// Query form's auth token rather than the query string
+func FormAuthMiddleware(c *gin.Context) {
+	auth(c, c.PostForm("token"))
+}
+
 // Auth middleware used to handle authentication for every route that needs auth
-func AuthMiddleware(c *gin.Context) {
+func QueryAuthMiddleware(c *gin.Context) {
 	// Check the token parameter
-	token := c.Query("token")
+	auth(c, c.Query("token"))
+}
+
+func auth(c *gin.Context, token string) {
 	if token == "" {
 		c.AbortWithStatusJSON(http.StatusOK, Response{
-			StatusCode: 1,
+			StatusCode: http.StatusBadRequest,
 			StatusMsg:  "鉴权参数错误",
 		})
 		return
@@ -33,15 +42,16 @@ func AuthMiddleware(c *gin.Context) {
 	claims := parseToken(token)
 	if claims == nil {
 		c.AbortWithStatusJSON(http.StatusOK, Response{
-			StatusCode: 1,
-			StatusMsg:  "用户鉴权错误错误",
+			StatusCode: http.StatusBadRequest,
+			StatusMsg:  "用户鉴权错误",
 		})
 		return
 	}
 	log.Printf("Token user ID: %s\n", claims.Id)
 
 	// If auth success, we pass an 'id' to gin's context
-	c.Set("id", claims.Id)
+	id, _ := strconv.ParseInt(claims.Id, 10, 64)
+	c.Set("id", id)
 }
 
 // signJWT signs a JWT and returns it.
