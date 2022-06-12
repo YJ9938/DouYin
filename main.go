@@ -1,15 +1,12 @@
 package main
 
 import (
-	"github.com/YJ9938/DouYin/model"
 	"github.com/YJ9938/DouYin/router"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	r := gin.Default()
-
-	model.InitMySQL()
 
 	router.InitRouter(r)
 

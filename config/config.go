@@ -37,7 +37,7 @@ var C Config
 
 const ConfigPath = "config/config.yaml"
 
-func Init() {
+func init() {
 	file, err := os.Open(ConfigPath)
 	if err != nil {
 		log.Fatalf("failed to open config file: %s", err)
